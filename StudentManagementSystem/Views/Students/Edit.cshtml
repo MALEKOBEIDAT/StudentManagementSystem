@@ -1,0 +1,149 @@
+﻿@model StudentManagementSystem.Models.Student
+
+<div class="container mt-5">
+    <h2>Edit Student</h2>
+
+    <form action="/Students/Edit" method="post" enctype="multipart/form-data" novalidate>
+        @Html.AntiForgeryToken()
+
+        <!-- Hidden Field for StudentID -->
+        <input type="hidden" name="StudentID" value="@Model.StudentID" />
+
+        <!-- Student Number -->
+        <div class="form-group">
+            <label for="StudentNumber">Student Number</label>
+            <input type="text"
+                   class="form-control"
+                   name="StudentNumber"
+                   value="@Model.StudentNumber"
+                   pattern="^\d{8}$"
+                   required />
+            @Html.ValidationMessageFor(m => m.StudentNumber, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Name Arabic -->
+        <div class="form-group">
+            <label for="NameArabic">Name (Arabic)</label>
+            <input type="text"
+                   class="form-control"
+                   name="NameArabic"
+                   value="@Model.NameArabic"
+                   pattern="^[\u0600-\u06FF ]+$"
+                   required />
+        </div>
+
+        <!-- Name English -->
+        <div class="form-group">
+            <label for="NameEnglish">Name (English)</label>
+            <input type="text"
+                   class="form-control"
+                   name="NameEnglish"
+                   value="@Model.NameEnglish"
+                   pattern="^[A-Za-z ]+$"
+                   required />
+        </div>
+
+        <!-- Date of Birth -->
+        <div class="form-group">
+            <label for="DateOfBirth">Date of Birth</label>
+            <input type="date"
+                   class="form-control"
+                   name="DateOfBirth"
+                   value="@Model.DateOfBirth.ToString("yyyy-MM-dd")"
+                   required />
+        </div>
+
+        <!-- Tawjehi Average -->
+        <div class="form-group">
+            <label for="TawjehiAverage">Tawjehi Average</label>
+            <input type="number"
+                   class="form-control"
+                   name="TawjehiAverage"
+                   value="@Model.TawjehiAverage"
+                   min="0"
+                   max="100"
+                   step="0.01"
+                   required />
+        </div>
+
+        <!-- School Name -->
+        <div class="form-group">
+            <label for="SchoolName">School Name</label>
+            <input type="text"
+                   class="form-control"
+                   name="SchoolName"
+                   value="@Model.SchoolName"
+                   pattern="^[A-Za-z ]+$"
+                   required />
+        </div>
+
+        <!-- National Number -->
+        <div class="form-group">
+            <label for="NationalNumber">National Number</label>
+            <input type="text"
+                   class="form-control"
+                   name="NationalNumber"
+                   value="@Model.NationalNumber"
+                   pattern="^\d{10,12}$"
+                   required />
+            @Html.ValidationMessageFor(m => m.NationalNumber, "", new { @class = "text-danger" })
+        </div>
+
+        <!-- Physics Grade -->
+        <div class="form-group">
+            <label for="PhysicsGrade">Physics Grade</label>
+            <input type="number"
+                   class="form-control"
+                   name="PhysicsGrade"
+                   value="@Model.PhysicsGrade"
+                   min="0"
+                   max="100"
+                   step="0.01"
+                   required />
+        </div>
+
+        <!-- Math Grade -->
+        <div class="form-group">
+            <label for="MathGrade">Math Grade</label>
+            <input type="number"
+                   class="form-control"
+                   name="MathGrade"
+                   value="@Model.MathGrade"
+                   min="0"
+                   max="100"
+                   step="0.01"
+                   required />
+        </div>
+
+        <!-- Current Picture -->
+        @if (!string.IsNullOrEmpty(Model.PicturePath))
+        {
+            <div class="form-group">
+                <label>Current Picture:</label><br>
+                <img src="@Url.Content(Model.PicturePath)" alt="Current Picture" width="150" height="150" class="img-thumbnail" />
+            </div>
+        }
+
+        <!-- Upload New Picture -->
+        <div class="form-group">
+            <label for="PictureFile">Upload New Picture</label>
+            <input type="file"
+                   class="form-control"
+                   name="PictureFile"
+                   accept="image/*" />
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn btn-success btn-block">
+            <i class="fas fa-save"></i> Save Changes
+        </button>
+
+    </form>
+
+    <a href="/Students/Index" class="btn btn-secondary mt-3">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<!-- Include Bootstrap -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>

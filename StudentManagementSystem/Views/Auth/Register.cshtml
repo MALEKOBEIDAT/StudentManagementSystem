@@ -1,0 +1,155 @@
+﻿@{
+    ViewBag.Title = "Register";
+}
+
+<div ng-app="AuthApp" ng-controller="AuthController" class="container mt-5">
+
+    <div class="card shadow-lg">
+        <div class="card-header bg-primary text-white text-center">
+            <h2>Register</h2>
+        </div>
+
+        <div class="card-body">
+            <!-- Form for user registration -->
+            <form name="registerForm" ng-submit="register()" novalidate>
+
+                <!-- Username -->
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username"
+                           ng-model="user.Username"
+                           class="form-control"
+                           placeholder="Enter your username"
+                           ng-pattern="/^[A-Za-z]+$/"
+                           required />
+                    <small class="form-text text-danger" ng-if="registerForm.username.$dirty && registerForm.username.$invalid">
+                        <span ng-if="registerForm.username.$error.required">Username is required.</span>
+                        <span ng-if="registerForm.username.$error.pattern">Username must contain **only letters**.</span>
+                    </small>
+                </div>
+
+                <!-- Password -->
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password"
+                           ng-model="user.PasswordHash"
+                           class="form-control"
+                           placeholder="Enter your password"
+                           ng-pattern="/^\d{8}$/"
+                           required />
+                    <small class="form-text text-danger" ng-if="registerForm.password.$dirty && registerForm.password.$invalid">
+                        <span ng-if="registerForm.password.$error.required">Password is required.</span>
+                        <span ng-if="registerForm.password.$error.pattern">Password must be **exactly 8 digits**.</span>
+                    </small>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email"
+                           ng-model="user.Email"
+                           class="form-control"
+                           placeholder="Enter your email address"
+                           required />
+                    <small class="form-text text-danger" ng-if="registerForm.email.$dirty && registerForm.email.$invalid">
+                        <span ng-if="registerForm.email.$error.required">Email is required.</span>
+                        <span ng-if="registerForm.email.$error.email">Please enter a **valid email address**.</span>
+                    </small>
+                </div>
+
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" name="fullName"
+                           ng-model="user.FullName"
+                           class="form-control"
+                           placeholder="Enter your full name"
+                           ng-pattern="/^[A-Za-z ]+$/"
+                           required />
+                    <small class="form-text text-danger" ng-if="registerForm.fullName.$dirty && registerForm.fullName.$invalid">
+                        <span ng-if="registerForm.fullName.$error.required">Full Name is required.</span>
+                        <span ng-if="registerForm.fullName.$error.pattern">Full Name must contain **only letters and spaces**.</span>
+                    </small>
+                </div>
+
+                <!-- Submit Button with Tooltip -->
+                <div class="form-group text-center">
+                    <span data-toggle="tooltip"
+                          data-placement="top"
+                          ng-attr-title="{{registerForm.$invalid ? 'Please fill in all fields correctly to enable the Register button.' : ''}}">
+                        <button type="submit"
+                                class="btn btn-success btn-block"
+                                ng-disabled="registerForm.$invalid">
+                            <i class="fas fa-user-plus"></i> Register
+                        </button>
+                    </span>
+                </div>
+
+            </form>
+
+            <!-- Success Message -->
+            <div class="alert alert-success" ng-if="message">
+                <strong>Success!</strong> {{ message }}
+            </div>
+
+            <!-- Error Message -->
+            <div class="alert alert-danger" ng-if="errorMessage">
+                <strong>Error!</strong> {{ errorMessage }}
+            </div>
+
+        </div>
+
+        <div class="card-footer text-center">
+            <p>Already have an account? <a href="/Auth/Login" class="text-primary">Login here</a></p>
+        </div>
+    </div>
+
+</div>
+
+<!-- Import AngularJS, Bootstrap, and Font Awesome -->
+<script src="https://code.jquery.com/jquery-3.7.1.slim.min.js" integrity="sha256-kmHvs0B+OpCW5GVHUNjv9rOmY0IvSIRcf7zGUDTDQM8=" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+
+<script>
+    var app = angular.module('AuthApp', []);
+
+    app.controller('AuthController', function ($scope, $http, $timeout) {
+        $scope.user = {}; // Initialize the user object
+
+        // Reinitialize Bootstrap tooltip every time the form changes
+        $scope.$watch('registerForm.$invalid', function () {
+            $timeout(function () {
+                $('[data-toggle="tooltip"]').tooltip('dispose').tooltip();
+            }, 100);
+        });
+
+        $scope.register = function () {
+            if ($scope.registerForm.$invalid) {
+                $scope.errorMessage = 'Please fill out the form correctly.';
+                return;
+            }
+
+            console.log("Attempting to register user:", $scope.user);
+
+            $http.post('/Auth/Register', $scope.user)
+                .then(function (response) {
+                    if (response.data.success) {
+                        $scope.message = response.data.message;
+                        $scope.errorMessage = '';
+                        setTimeout(() => window.location.href = '/Auth/Login', 3000);
+                    } else {
+                        $scope.message = '';
+                        $scope.errorMessage = response.data.message;
+                    }
+                })
+                .catch(function (error) {
+                    $scope.errorMessage = 'An error occurred: ' + error.statusText;
+                    console.error('Error:', error);
+                });
+        };
+    });
+</script>
